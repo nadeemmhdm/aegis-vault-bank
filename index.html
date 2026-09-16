@@ -176,6 +176,19 @@
           </a>
         </li>
         <li>
+          <a class="nav-link" data-view="deposits">
+            <i class='bx bx-coin-stack'></i>
+            <span>Fixed Deposits</span>
+            <span class="nav-badge" style="background: rgba(16,185,129,0.2); color: var(--accent-emerald);">7.25% APY</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="beneficiaries">
+            <i class='bx bx-book-content'></i>
+            <span>Beneficiaries</span>
+          </a>
+        </li>
+        <li>
           <a class="nav-link" data-view="loans">
             <i class='bx bx-trending-up'></i>
             <span>Credit & Lending</span>
@@ -231,6 +244,17 @@
         </div>
 
         <div class="header-right">
+          <!-- Currency Switcher -->
+          <div class="currency-selector-widget">
+            <i class='bx bx-globe' style="color: var(--accent-cyan);"></i>
+            <select id="currency-select" class="currency-dropdown" title="Select Currency">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="INR">INR (₹)</option>
+            </select>
+          </div>
+
           <!-- Live 2FA Widget -->
           <div class="totp-quick-widget" id="totp-header-btn" title="Click to view 2FA Authenticator">
             <i class='bx bx-key' style="color: var(--accent-cyan);"></i>
@@ -330,8 +354,11 @@
                     <span>Customer Transaction Ledger</span>
                   </div>
                   <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-secondary btn-sm" id="btn-export-csv">
+                    <button class="btn btn-secondary btn-sm" id="btn-export-csv" title="Download CSV">
                       <i class='bx bx-download'></i> Export CSV
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="btn-print-statement" title="Print or Save Formal PDF Statement">
+                      <i class='bx bx-printer'></i> Print / PDF
                     </button>
                     <button class="btn btn-primary btn-sm" id="btn-quick-transfer">
                       <i class='bx bx-send'></i> Send Funds
@@ -916,6 +943,23 @@
               </table>
             </div>
           </div>
+
+          <!-- Active Sessions & Security Watchdog -->
+          <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <i class='bx bx-devices'></i>
+                <span>Active Login Sessions & Security Watchdog</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-terminate-other-sessions" style="color: var(--accent-rose);">
+                <i class='bx bx-power-off'></i> Revoke Other Sessions
+              </button>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Monitors active TLS/TCP sessions and proxy tunnels connected to this customer account:
+            </p>
+            <div id="login-sessions-list"></div>
+          </div>
         </section>
 
         <!-- ================= VIEW 6: CUSTOMER PROFILE ================= -->
@@ -958,6 +1002,149 @@
                 Switch between different customer profiles to test account isolation and personalized financial ledgers:
               </p>
               <div id="customers-profiles-list" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 7: FIXED DEPOSITS & WEALTH ================= -->
+        <section class="view-panel" id="view-deposits">
+          <div class="grid-cols-3">
+            <!-- FD Booking & Calculator -->
+            <div class="card" style="grid-column: span 1;">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-calculator'></i>
+                  <span>Book Term Certificate</span>
+                </div>
+                <span class="badge-status badge-completed">Up to 8.15% APY</span>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Lock liquidity in sovereign and commercial grade high-yield term deposits. Compounded returns paid on maturity:
+              </p>
+
+              <form id="form-book-fd">
+                <div class="form-group">
+                  <label class="form-label">Principal Deposit Amount ($)</label>
+                  <input type="number" min="500" max="1000000" step="100" class="form-input" id="fd-principal-input" value="10000" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Deposit Tenure</label>
+                  <select class="form-select" id="fd-tenure-select">
+                    <option value="6" data-rate="6.80">6 Months @ 6.80% APY</option>
+                    <option value="12" data-rate="7.25" selected>12 Months @ 7.25% APY</option>
+                    <option value="24" data-rate="7.65">24 Months @ 7.65% APY</option>
+                    <option value="36" data-rate="8.15">36 Months @ 8.15% APY</option>
+                  </select>
+                </div>
+
+                <!-- Calculator Preview Box -->
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                    <span style="color: var(--text-muted);">Accrued Interest:</span>
+                    <strong style="color: var(--accent-emerald);" id="fd-calc-interest">+$725.00</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 700;">
+                    <span style="color: var(--text-secondary);">Maturity Value:</span>
+                    <span style="color: var(--accent-cyan); font-family: var(--font-mono);" id="fd-calc-maturity">$10,725.00</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Transaction PIN</label>
+                  <input type="password" maxlength="4" class="form-input" id="fd-pin-input" placeholder="4-Digit PIN" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="btn-submit-book-fd">
+                  <i class='bx bx-check-shield'></i> Authorize & Book Certificate
+                </button>
+              </form>
+            </div>
+
+            <!-- Active Certificates Grid -->
+            <div class="card" style="grid-column: span 2;">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-coin-stack'></i>
+                  <span>Active Term Certificates</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-refresh-fds">
+                  <i class='bx bx-refresh'></i> Refresh Certificates
+                </button>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                Active fixed deposit contracts registered in your relational database with guaranteed settlement:
+              </p>
+
+              <div class="fd-grid" id="fd-certificates-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 8: BENEFICIARIES & PAYEES ================= -->
+        <section class="view-panel" id="view-beneficiaries">
+          <div class="grid-cols-3">
+            <!-- Add Beneficiary Form -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-user-plus'></i>
+                  <span>Register Payee</span>
+                </div>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Whitelist approved payees for wire transfers and UPI payments with cryptographic trust validation:
+              </p>
+
+              <form id="form-add-beneficiary">
+                <div class="form-group">
+                  <label class="form-label">Beneficiary Legal Name</label>
+                  <input type="text" class="form-input" id="bene-name-input" placeholder="e.g. Apex Cybernetics Ltd" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Transfer Rail Type</label>
+                  <select class="form-select" id="bene-type-select">
+                    <option value="WIRE">Wire Transfer (ACH / Fedwire)</option>
+                    <option value="UPI">UPI 2.0 (Virtual Payment Address)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Account Number or UPI ID</label>
+                  <input type="text" class="form-input" id="bene-account-input" placeholder="e.g. 4491-0012-9901 or name@upi" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Bank Name / Network</label>
+                  <input type="text" class="form-input" id="bene-bank-input" placeholder="e.g. Apex Federal Clearing" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Routing / SWIFT / IFSC Code</label>
+                  <input type="text" class="form-input" id="bene-routing-input" value="021000021" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="btn-submit-bene">
+                  <i class='bx bx-check-circle'></i> Save to Trusted Directory
+                </button>
+              </form>
+            </div>
+
+            <!-- Beneficiaries Directory List -->
+            <div class="card" style="grid-column: span 2;">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-book-content'></i>
+                  <span>Pre-Approved Payees Directory</span>
+                </div>
+                <span class="badge-status badge-completed" id="bene-count-badge">3 Trusted</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                Manage pre-approved recipients. Tap "Quick Send" to immediately launch a transfer:
+              </p>
+
+              <div class="beneficiary-grid" id="beneficiaries-list"></div>
             </div>
           </div>
         </section>

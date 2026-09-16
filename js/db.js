@@ -1,18 +1,20 @@
 /**
- * AegisVault - Native IndexedDB Real Persistent Database Engine
+ * AegisVault - Native IndexedDB Real Persistent Database Engine (v2)
  * Implements an asynchronous client-side relational database for:
  * - Customers
  * - Accounts
  * - Virtual Cards
  * - Transactions & UPI Payments
- * - Beneficiaries & UPI Contacts
+ * - Fixed Deposits / Term Certificates
+ * - Beneficiaries & Payees
+ * - Login Sessions & Device Tracking
  * - Audit Trail (Cryptographic SHA-256 Chained Logs)
  */
 
 import { CryptoEngine } from './crypto.js';
 
 const DB_NAME = 'AegisVault_Commercial_DB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export class DatabaseEngine {
   constructor() {
@@ -66,6 +68,19 @@ export class DatabaseEngine {
           const auditStore = db.createObjectStore('audit_logs', { keyPath: 'id' });
           auditStore.createIndex('timestamp', 'timestamp', { unique: false });
         }
+
+        // 7. Fixed Deposits store (v2)
+        if (!db.objectStoreNames.contains('fixed_deposits')) {
+          const fdStore = db.createObjectStore('fixed_deposits', { keyPath: 'id' });
+          fdStore.createIndex('customerId', 'customerId', { unique: false });
+          fdStore.createIndex('status', 'status', { unique: false });
+        }
+
+        // 8. Active Login Sessions store (v2)
+        if (!db.objectStoreNames.contains('login_sessions')) {
+          const sessStore = db.createObjectStore('login_sessions', { keyPath: 'id' });
+          sessStore.createIndex('customerId', 'customerId', { unique: false });
+        }
       };
 
       request.onsuccess = async (e) => {
@@ -102,78 +117,62 @@ export class DatabaseEngine {
     });
   }
 
-  // Seed default private banking customer Alex Vance if database is fresh
+  // Seed default demo datasets if customer table is empty
   async seedInitialDataIfEmpty() {
     const customerCount = await this.count('customers');
     if (customerCount > 0) return;
 
-    console.log('[IndexedDB] Database is empty. Seeding initial private client records...');
+    console.info('[IndexedDB] Initializing database with primary commercial accounts...');
 
-    const salt = 'aegis_salt_vance_2026';
-    const passwordHash = await CryptoEngine.sha256('password123' + salt);
-    const pinHash = await CryptoEngine.sha256('1234');
+    // Master Customer: Alex Vance
+    const pinHash = await CryptoEngine.hashSHA256('1234');
+    const passHash = await CryptoEngine.hashSHA256('password123');
 
-    const defaultCustomer = {
+    const masterCustomer = {
       id: 'USR-8821',
       name: 'Alex Vance',
       email: 'alex.vance@aegisvault.internal',
-      upiId: 'alex.vance@aegis',
-      passwordHash,
-      salt,
-      pinHash,
-      pin: '1234',
-      clientTier: 'Aegis Private Client Elite',
-      kycStatus: 'Verified (Level 3 Enterprise)',
-      creditScore: 815,
-      avatar: 'AV',
       phone: '+1 (555) 019-2834',
-      twoFactorEnabled: true,
-      biometricsEnabled: true,
-      joinedDate: '2024-03-15'
+      upiId: 'alex.vance@aegis',
+      role: 'VIP_PRIVATE_CLIENT',
+      securityLevel: 'TIER_3_HSM',
+      pinHash,
+      passHash,
+      createdAt: '2026-01-10T08:00:00.000Z'
     };
+    await this.put('customers', masterCustomer);
 
-    await this.put('customers', defaultCustomer);
-
-    // Initial Accounts
+    // Initial Bank Accounts
     const defaultAccounts = [
       {
         id: 'ACC-CHK-9042',
         customerId: 'USR-8821',
-        type: 'Checking',
-        name: 'Premier Commercial Checking',
-        accountNumber: '9840-2210-4491',
-        routingNumber: '021000021',
-        balance: 48950.75,
+        accountNumber: '4491-0812-9042',
+        type: 'Premier Checking',
         currency: 'USD',
-        status: 'Active',
-        dailyLimit: 25000,
-        spentToday: 3200.00
+        balance: 148920.50,
+        apy: '0.00%',
+        status: 'ACTIVE'
       },
       {
         id: 'ACC-SAV-8133',
         customerId: 'USR-8821',
-        type: 'Savings',
-        name: 'High-Yield Reserve (4.85% APY)',
-        accountNumber: '9840-2210-8133',
-        routingNumber: '021000021',
-        balance: 184520.40,
+        accountNumber: '4491-9921-8133',
+        type: 'High-Yield Reserve',
         currency: 'USD',
-        status: 'Active',
-        dailyLimit: 50000,
-        spentToday: 0.00
+        balance: 624500.00,
+        apy: '4.85%',
+        status: 'ACTIVE'
       },
       {
-        id: 'ACC-VLT-007',
+        id: 'ACC-VLT-0091',
         customerId: 'USR-8821',
-        type: 'Cold Vault',
-        name: 'Institutional Cold Vault Reserve',
-        accountNumber: 'VLT-SECURE-9901',
-        routingNumber: '021000021',
-        balance: 620000.00,
+        accountNumber: '4491-7700-0091',
+        type: 'Cold Vault Custody',
         currency: 'USD',
-        status: 'Hardware Enforced',
-        dailyLimit: 100000,
-        spentToday: 0.00
+        balance: 250000.00,
+        apy: '5.25%',
+        status: 'LOCKED'
       }
     ];
 
@@ -181,61 +180,56 @@ export class DatabaseEngine {
       await this.put('accounts', acc);
     }
 
-    // Initial Cards
-    const defaultCards = [
-      {
-        id: 'CRD-9921',
-        customerId: 'USR-8821',
-        type: 'Titanium Debit Card',
-        cardNumber: '4532 •••• •••• 9921',
-        cardRawNumber: '4532 8901 3342 9921',
-        holderName: 'ALEX VANCE',
-        expiry: '09/29',
-        cvv: '842',
-        frozen: false,
-        contactlessLimit: 2500,
-        internationalOnline: true,
-        cardColor: 'gradient-emerald'
-      },
-      {
-        id: 'CRD-3184',
-        customerId: 'USR-8821',
-        type: 'Black Private Client Card',
-        cardNumber: '5105 •••• •••• 3184',
-        cardRawNumber: '5105 4421 9081 3184',
-        holderName: 'ALEX VANCE',
-        expiry: '12/30',
-        cvv: '491',
-        frozen: false,
-        contactlessLimit: 10000,
-        internationalOnline: true,
-        cardColor: 'gradient-dark'
-      }
-    ];
+    // Virtual Titanium Card
+    const defaultCard = {
+      id: 'CRD-7701',
+      customerId: 'USR-8821',
+      cardNumber: '4491 8820 9102 3381',
+      cardholder: 'ALEX VANCE',
+      expiry: '09/29',
+      cvv: '842',
+      dailyLimit: 25000,
+      monthlyLimit: 100000,
+      frozen: false,
+      internationalAllowed: true,
+      contactlessLimit: 5000,
+      type: 'TITANIUM_DEBIT'
+    };
+    await this.put('cards', defaultCard);
 
-    for (const card of defaultCards) {
-      await this.put('cards', card);
-    }
-
-    // Initial Transactions (including UPI and Wires)
+    // Initial Ledger Transactions
     const defaultTxs = [
       {
-        id: 'TX-UPI-7719',
+        id: 'TX-INT-9912',
         customerId: 'USR-8821',
-        date: '2026-09-16 17:30:00',
-        title: 'UPI Payment to cloudprovider@upi',
-        category: 'UPI Instant',
+        date: '2026-09-16 16:45:22',
+        title: 'High-Yield APY Interest Paid',
+        category: 'Interest',
+        paymentMethod: 'AUTOMATED',
+        amount: +2520.14,
+        type: 'credit',
+        account: 'ACC-SAV-8133',
+        status: 'Completed',
+        verifiedNonce: '1789431201.33b190ff',
+        memo: 'Monthly compounded savings yield'
+      },
+      {
+        id: 'TX-UPI-7001',
+        customerId: 'USR-8821',
+        date: '2026-09-16 15:20:10',
+        title: 'UPI Instant to devsecops@upi',
+        category: 'UPI Transfer',
         paymentMethod: 'UPI',
-        amount: -249.99,
+        amount: -450.00,
         type: 'debit',
         account: 'ACC-CHK-9042',
         status: 'Completed',
-        upiRef: 'UPI-984022108849',
-        verifiedNonce: '1789551200.a1b2c3d4',
-        memo: 'Enterprise DNS & Cloudflare tunnel license'
+        verifiedNonce: '1789430112.44f991bc',
+        memo: 'Lab compute credit settlement',
+        upiRef: 'UPI-992817263541'
       },
       {
-        id: 'TX-WIRE-9B38',
+        id: 'TX-WIRE-4412',
         customerId: 'USR-8821',
         date: '2026-09-16 14:12:00',
         title: 'Wire to Nova Cybernetics LLC',
@@ -270,14 +264,46 @@ export class DatabaseEngine {
 
     // Initial Beneficiaries
     const defaultBeneficiaries = [
-      { id: 'BEN-1', customerId: 'USR-8821', name: 'Nova Cybernetics LLC', accountOrUpi: '9840-2210-9941', type: 'WIRE', routing: '021000021' },
-      { id: 'BEN-2', customerId: 'USR-8821', name: 'DevSecOps Infrastructure', accountOrUpi: 'devsecops@upi', type: 'UPI', routing: 'AEGIS_UPI' },
-      { id: 'BEN-3', customerId: 'USR-8821', name: 'Quantum Key Escrow Vault', accountOrUpi: '9840-7712-4402', type: 'WIRE', routing: '021000021' }
+      { id: 'BEN-1', customerId: 'USR-8821', name: 'Nova Cybernetics LLC', accountOrUpi: '9840-2210-9941', type: 'WIRE', bankName: 'Apex Federal Reserve', routing: '021000021' },
+      { id: 'BEN-2', customerId: 'USR-8821', name: 'DevSecOps Infrastructure', accountOrUpi: 'devsecops@upi', type: 'UPI', bankName: 'Aegis UPI Network', routing: 'AEGIS_UPI' },
+      { id: 'BEN-3', customerId: 'USR-8821', name: 'Quantum Key Escrow Vault', accountOrUpi: '9840-7712-4402', type: 'WIRE', bankName: 'Zurich Private Custody', routing: '021000021' }
     ];
 
     for (const b of defaultBeneficiaries) {
       await this.put('beneficiaries', b);
     }
+
+    // Initial Fixed Deposits (v2)
+    const defaultFds = [
+      {
+        id: 'FD-2026-8801',
+        customerId: 'USR-8821',
+        depositNumber: 'FD-8801-4491',
+        principal: 50000.00,
+        tenureMonths: 12,
+        interestRate: 7.25,
+        maturityAmount: 53625.00,
+        startDate: '2026-01-15',
+        maturityDate: '2027-01-15',
+        status: 'ACTIVE',
+        interestPayout: 'ON_MATURITY'
+      }
+    ];
+
+    for (const fd of defaultFds) {
+      await this.put('fixed_deposits', fd);
+    }
+
+    // Initial Login Session (v2)
+    const initialSession = {
+      id: 'SESS-' + Date.now(),
+      customerId: 'USR-8821',
+      device: 'Kali Linux / Firefox 128 (Burp Suite Proxy)',
+      ipAddress: '192.168.1.100',
+      loginTime: new Date().toISOString(),
+      status: 'ACTIVE'
+    };
+    await this.put('login_sessions', initialSession);
   }
 
   // Database CRUD operations

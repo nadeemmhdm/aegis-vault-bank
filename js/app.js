@@ -31,6 +31,9 @@ class AppController {
     this.bindHeaderEvents();
     this.bindBankingEvents();
     this.bindUpiEvents();
+    this.bindDepositsEvents();
+    this.bindBeneficiariesEvents();
+    this.bindStatementEvents();
     this.bindLendingEvents();
     this.bindSecurityEvents();
     this.bindModals();
@@ -271,6 +274,8 @@ class AppController {
       accounts: { title: 'Accounts & Cards Studio', subtitle: 'Multi-currency liquidity & hardware key vaults' },
       transfers: { title: 'Wire & Transfer Hub', subtitle: 'Zero-trust cryptographic transaction routing' },
       upi: { title: 'Unified Payments Interface (UPI 2.0)', subtitle: 'Instant real-time VPA settlement & dynamic QR payments' },
+      deposits: { title: 'Fixed Deposits & Term Certificates', subtitle: 'Guaranteed sovereign and commercial yield up to 8.15% APY' },
+      beneficiaries: { title: 'Beneficiary & Payee Directory', subtitle: 'Whitelisted and verified ACH, Fedwire, and UPI transfer recipients' },
       loans: { title: 'Credit & Lending Facilities', subtitle: 'Commercial expansion lines & institutional capital' },
       security: { title: 'Security & Compliance Center', subtitle: 'Cryptographic proofs, defense posture, and SIEM forwarding' },
       profile: { title: 'Customer Profile & KYC', subtitle: 'Level 3 Enterprise Client tier & authorized identities' }
@@ -287,6 +292,17 @@ class AppController {
   }
 
   bindHeaderEvents() {
+    // Currency Selector
+    const currSelect = document.getElementById('currency-select');
+    if (currSelect) {
+      currSelect.value = this.store.currentCurrency || 'USD';
+      currSelect.addEventListener('change', (e) => {
+        this.playSound.click();
+        this.store.setCurrency(e.target.value);
+        this.showToast(`Display currency changed to ${e.target.value}`, 'info');
+      });
+    }
+
     const themeBtn = document.getElementById('theme-toggle-btn');
     const savedTheme = localStorage.getItem('aegisvault_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -523,6 +539,118 @@ class AppController {
       const link = `upi://pay?pa=${upiText}&pn=${encodeURIComponent(this.store.currentCustomer.name)}&cu=USD`;
       navigator.clipboard.writeText(link);
       this.showToast('UPI Payment deep-link copied to clipboard!', 'success');
+    });
+  }
+
+  // Fixed Deposits & Wealth
+  bindDepositsEvents() {
+    const principalInput = document.getElementById('fd-principal-input');
+    const tenureSelect = document.getElementById('fd-tenure-select');
+    const interestDisplay = document.getElementById('fd-calc-interest');
+    const maturityDisplay = document.getElementById('fd-calc-maturity');
+
+    const updateFdCalc = () => {
+      if (!principalInput || !tenureSelect) return;
+      const principal = parseFloat(principalInput.value) || 0;
+      const selectedOption = tenureSelect.options[tenureSelect.selectedIndex];
+      const rate = parseFloat(selectedOption?.getAttribute('data-rate') || 7.25);
+      const months = parseInt(tenureSelect.value || 12);
+      const interest = principal * (rate / 100) * (months / 12);
+      const maturity = principal + interest;
+
+      if (interestDisplay) interestDisplay.textContent = `+${this.store.formatAmount(interest)}`;
+      if (maturityDisplay) maturityDisplay.textContent = this.store.formatAmount(maturity);
+    };
+
+    principalInput?.addEventListener('input', updateFdCalc);
+    tenureSelect?.addEventListener('change', updateFdCalc);
+    updateFdCalc();
+
+    document.getElementById('form-book-fd')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const principal = principalInput.value;
+      const selectedOption = tenureSelect.options[tenureSelect.selectedIndex];
+      const interestRate = parseFloat(selectedOption?.getAttribute('data-rate') || 7.25);
+      const tenureMonths = tenureSelect.value;
+      const pin = document.getElementById('fd-pin-input').value;
+
+      const submitBtn = document.getElementById('btn-submit-book-fd');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Booking Certificate...";
+
+      const res = await this.store.bookFixedDeposit({
+        principal,
+        tenureMonths,
+        interestRate,
+        pin
+      });
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = "<i class='bx bx-check-shield'></i> Authorize & Book Certificate";
+
+      if (res.success) {
+        this.showToast(`Term Certificate ${res.fd.depositNumber} booked successfully!`, 'success');
+        document.getElementById('form-book-fd').reset();
+        updateFdCalc();
+      } else {
+        this.showToast(res.error, 'error');
+      }
+    });
+
+    document.getElementById('btn-refresh-fds')?.addEventListener('click', async () => {
+      await this.store.refreshFromDatabase();
+      this.renderAll();
+      this.showToast('Fixed deposit certificates refreshed from database', 'info');
+    });
+  }
+
+  // Beneficiaries Management
+  bindBeneficiariesEvents() {
+    document.getElementById('form-add-beneficiary')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('bene-name-input').value;
+      const type = document.getElementById('bene-type-select').value;
+      const accountOrUpi = document.getElementById('bene-account-input').value;
+      const bankName = document.getElementById('bene-bank-input').value;
+      const routing = document.getElementById('bene-routing-input').value;
+
+      const submitBtn = document.getElementById('btn-submit-bene');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Saving Payee...";
+
+      const res = await this.store.addBeneficiary({
+        name,
+        type,
+        accountOrUpi,
+        bankName,
+        routing
+      });
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = "<i class='bx bx-check-circle'></i> Save to Trusted Directory";
+
+      if (res.success) {
+        this.showToast(`Beneficiary ${name} saved to directory!`, 'success');
+        document.getElementById('form-add-beneficiary').reset();
+      } else {
+        this.showToast(res.error, 'error');
+      }
+    });
+  }
+
+  // Statement & PDF Print
+  bindStatementEvents() {
+    document.getElementById('btn-print-statement')?.addEventListener('click', () => {
+      this.playSound.click();
+      window.print();
+    });
+
+    document.getElementById('btn-terminate-other-sessions')?.addEventListener('click', async () => {
+      const currentSessions = this.store.loginSessions || [];
+      for (const sess of currentSessions) {
+        await this.store.terminateSession(sess.id);
+      }
+      this.showToast('All other remote browser sessions and Kali proxy connections terminated.', 'warning');
     });
   }
 
@@ -891,6 +1019,91 @@ class AppController {
         `;
       }).join('');
     }
+
+    // Fixed Deposits Grid
+    const fdList = document.getElementById('fd-certificates-list');
+    if (fdList) {
+      if (!this.store.fixedDeposits || this.store.fixedDeposits.length === 0) {
+        fdList.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2.5rem;">No term certificates booked yet. Use the booking calculator on the left to lock in yields up to 8.15% APY.</div>`;
+      } else {
+        fdList.innerHTML = this.store.fixedDeposits.map(fd => `
+          <div class="fd-card">
+            <div class="fd-card-header">
+              <div>
+                <span class="fd-number">${fd.depositNumber}</span>
+                <div style="font-size: 0.82rem; font-weight: 600; margin-top: 2px;">Term Certificate (${fd.tenureMonths} Months)</div>
+              </div>
+              <span class="fd-apy-badge">${fd.interestRate}% APY</span>
+            </div>
+            <div class="fd-amount-grid">
+              <div>
+                <div class="fd-stat-label">Principal Locked</div>
+                <div class="fd-stat-val">${this.store.formatAmount(fd.principal)}</div>
+              </div>
+              <div>
+                <div class="fd-stat-label">Maturity Value</div>
+                <div class="fd-stat-val" style="color: var(--accent-cyan);">${this.store.formatAmount(fd.maturityAmount)}</div>
+              </div>
+            </div>
+            <div class="fd-meta-row">
+              <span>Booked: ${fd.startDate}</span>
+              <span style="color: var(--accent-emerald); font-weight: 600;">Matures: ${fd.maturityDate}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Beneficiaries Directory Grid
+    const beneList = document.getElementById('beneficiaries-list');
+    const beneBadge = document.getElementById('bene-count-badge');
+    if (beneBadge) beneBadge.textContent = `${this.store.beneficiaries.length} Trusted`;
+    if (beneList) {
+      if (!this.store.beneficiaries || this.store.beneficiaries.length === 0) {
+        beneList.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No saved beneficiaries in directory. Add a trusted payee on the left.</div>`;
+      } else {
+        beneList.innerHTML = this.store.beneficiaries.map(b => `
+          <div class="beneficiary-card">
+            <div class="bene-header">
+              <div class="bene-name">${b.name}</div>
+              <span class="badge-bene ${b.type === 'UPI' ? 'badge-upi' : 'badge-wire'}">${b.type}</span>
+            </div>
+            <div class="bene-details">${b.accountOrUpi}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">${b.bankName || 'Verified Clearing Network'}</div>
+            <div class="bene-actions">
+              <button class="btn btn-primary btn-sm" style="flex: 1;" onclick="window.app.fillPayee('${b.name}', '${b.accountOrUpi}', '${b.routing}')">
+                <i class='bx bx-send'></i> Quick Pay
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="window.app.deleteBeneficiary('${b.id}')" title="Remove Payee">
+                <i class='bx bx-trash'></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Active Login Sessions List
+    const sessList = document.getElementById('login-sessions-list');
+    if (sessList) {
+      const sessions = this.store.loginSessions || [];
+      if (sessions.length === 0) {
+        sessList.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; padding: 0.5rem 0;">No active remote sessions detected.</div>`;
+      } else {
+        sessList.innerHTML = sessions.map(s => `
+          <div class="session-item">
+            <div class="session-info">
+              <i class='bx bx-laptop' style="font-size: 1.4rem; color: var(--accent-cyan);"></i>
+              <div>
+                <div class="session-device">${s.device}</div>
+                <div class="session-meta">IP: ${s.ipAddress} • Logged in: ${s.loginTime.substring(0, 19).replace('T', ' ')}</div>
+              </div>
+            </div>
+            <span class="badge-status badge-completed" style="font-size: 0.72rem;">ACTIVE</span>
+          </div>
+        `).join('');
+      }
+    }
   }
 
   async toggleCard(id) {
@@ -901,6 +1114,11 @@ class AppController {
   async regenCard(id) {
     await this.banking.regenerateCard(id);
     this.showToast('Card CVV and dynamic token regenerated in database', 'success');
+  }
+
+  async deleteBeneficiary(id) {
+    await this.store.deleteBeneficiary(id);
+    this.showToast('Beneficiary removed from trusted directory', 'info');
   }
 
   fillPayee(name, accOrUpi, rout) {
