@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary SEO Meta Tags -->
+  <title>AegisVault Bank | Private Banking & Institutional Wealth Trust</title>
+  <meta name="title" content="AegisVault Bank | Private Banking & Institutional Wealth Trust">
+  <meta name="description" content="AegisVault Commercial Bank & Trust provides ultra-secure multi-currency reserves, 3D dynamic virtual cards, encrypted wire transfers, and institutional asset management.">
+  <meta name="keywords" content="private banking, commercial trust, high-yield savings, encrypted wire transfer, virtual cards, institutional wealth">
+  <meta name="author" content="AegisVault Financial Technologies">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#070a13">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nadeemmhdm.github.io/aegis-vault-bank/">
+  <meta property="og:title" content="AegisVault Bank - Private Commercial Banking & Trust">
+  <meta property="og:description" content="Next-generation commercial banking experience with hardware-backed encryption and private wealth reserves.">
+
+  <!-- Boxicons Icons CDN -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Favicon SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2306b6d4'><path d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z'/></svg>">
+</head>
+<body>
+
+  <!-- ================= AUTHENTICATION PORTAL (SIGN IN / OPEN ACCOUNT) ================= -->
+  <div class="auth-modal-overlay" id="auth-portal-overlay">
+    <div class="auth-card-dialog">
+      <div class="brand" style="border: none; margin-bottom: 1.25rem; justify-content: center;">
+        <div class="brand-icon-wrapper">
+          <i class='bx bx-shield-quarter'></i>
+        </div>
+        <div class="brand-info">
+          <h1>AEGISVAULT</h1>
+          <span><i class='bx bxs-check-shield'></i> Private Banking & Trust</span>
+        </div>
+      </div>
+
+      <!-- Tab switch -->
+      <div class="auth-tab-switch">
+        <button class="auth-tab-btn active" id="tab-btn-signin">Sign In</button>
+        <button class="auth-tab-btn" id="tab-btn-signup">Open Customer Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="form-signin" class="auth-form-body active">
+        <div class="form-group">
+          <label class="form-label">Customer Email / Client ID</label>
+          <div class="input-with-icon">
+            <i class='bx bx-user'></i>
+            <input type="text" class="form-input" id="signin-email" placeholder="alex.vance@aegisvault.internal" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Account Password</label>
+          <div class="input-with-icon">
+            <i class='bx bx-lock-alt'></i>
+            <input type="password" class="form-input" id="signin-password" placeholder="••••••••••••" required>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.8rem;">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="signin-remember" checked> Remember Device
+          </label>
+          <a href="#" id="btn-quick-fill-vance" style="color: var(--accent-cyan); text-decoration: none;">Demo: Alex Vance</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" id="btn-submit-signin">
+          <i class='bx bx-log-in-circle'></i> Secure Customer Login
+        </button>
+
+        <div style="text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+          Protected by AES-256 PBKDF2 Key Derivation & FIDO2 Standards
+        </div>
+      </form>
+
+      <!-- Sign Up Form (New Customer Registration) -->
+      <form id="form-signup" class="auth-form-body">
+        <div class="form-group">
+          <label class="form-label">Full Legal Name</label>
+          <div class="input-with-icon">
+            <i class='bx bx-user'></i>
+            <input type="text" class="form-input" id="signup-name" placeholder="e.g. Elena Rostova" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <div class="input-with-icon">
+            <i class='bx bx-envelope'></i>
+            <input type="email" class="form-input" id="signup-email" placeholder="elena@example.com" required>
+          </div>
+        </div>
+
+        <div class="grid-cols-2" style="margin-bottom: 0;">
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="signup-pass" placeholder="Min 8 chars" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">4-Digit PIN</label>
+            <input type="password" maxlength="4" class="form-input" id="signup-pin" placeholder="e.g. 5678" required>
+          </div>
+        </div>
+
+        <div class="grid-cols-2" style="margin-bottom: 0;">
+          <div class="form-group">
+            <label class="form-label">Reserve Type</label>
+            <select class="form-select" id="signup-acctype">
+              <option value="Checking">Premier Checking</option>
+              <option value="Savings">High-Yield Reserve (4.85% APY)</option>
+              <option value="Vault">Institutional Cold Vault</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial Funding ($)</label>
+            <input type="number" min="100" max="500000" step="50" class="form-input" id="signup-deposit" value="5000">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" id="btn-submit-signup">
+          <i class='bx bx-user-plus'></i> Open Account & Generate Keys
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MAIN APPLICATION SHELL ================= -->
+  <div class="app-container" id="main-app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon-wrapper">
+          <i class='bx bx-shield-quarter'></i>
+        </div>
+        <div class="brand-info">
+          <h1>AEGISVAULT</h1>
+          <span><i class='bx bxs-check-shield'></i> Private Bank</span>
+        </div>
+      </div>
+
+      <div class="nav-section-title">Core Banking</div>
+      <ul class="nav-links">
+        <li>
+          <a class="nav-link active" data-view="dashboard">
+            <i class='bx bxs-dashboard'></i>
+            <span>Overview</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="accounts">
+            <i class='bx bxs-credit-card-front'></i>
+            <span>Accounts & Cards</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="transfers">
+            <i class='bx bx-transfer-alt'></i>
+            <span>Transfer & Wire</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="loans">
+            <i class='bx bx-trending-up'></i>
+            <span>Credit & Lending</span>
+            <span class="nav-badge" style="background: rgba(16,185,129,0.2); color: var(--accent-emerald);">5.2% APR</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-section-title">Security & Governance</div>
+      <ul class="nav-links">
+        <li>
+          <a class="nav-link" data-view="security">
+            <i class='bx bx-shield-quarter'></i>
+            <span>Security & Compliance</span>
+            <span class="nav-badge badge-lab" id="sidebar-sec-badge">HARDENED</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="profile">
+            <i class='bx bx-user-circle'></i>
+            <span>Customer Profile</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- User card in sidebar footer -->
+      <div class="sidebar-footer">
+        <div class="user-mini-card">
+          <div class="user-avatar" id="sidebar-avatar">AV</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-username">Alex Vance</div>
+            <div class="user-tier" id="sidebar-usertier"><i class='bx bxs-badge-check'></i> Private Client</div>
+          </div>
+          <button class="icon-btn" id="btn-logout" title="Sign Out Customer">
+            <i class='bx bx-log-out'></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-nav-toggle" id="mobile-nav-btn" aria-label="Toggle Navigation">
+            <i class='bx bx-menu'></i>
+          </button>
+          <div class="view-heading">
+            <h2 id="page-title">Executive Dashboard</h2>
+            <p id="page-subtitle">Real-time asset telemetry & institutional reserves</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Live 2FA Widget -->
+          <div class="totp-quick-widget" id="totp-header-btn" title="Click to view 2FA Authenticator">
+            <i class='bx bx-key' style="color: var(--accent-cyan);"></i>
+            <span style="font-size: 0.78rem; color: var(--text-secondary);">2FA:</span>
+            <span class="totp-code-display" id="header-totp-val">------</span>
+            <span class="totp-countdown-circle" id="header-totp-timer">(30s)</span>
+          </div>
+
+          <!-- Security Status Pill -->
+          <div class="security-status-pill">
+            <span class="status-dot"></span>
+            <span id="header-defense-mode">DEFENSE ENFORCED</span>
+          </div>
+
+          <!-- Inactivity Watchdog -->
+          <div class="watchdog-timer" title="Session auto-lock countdown">
+            <i class='bx bx-timer'></i>
+            <span id="header-watchdog-time">05:00</span>
+          </div>
+
+          <!-- Header Actions -->
+          <div class="header-actions">
+            <button class="icon-btn" id="theme-toggle-btn" title="Toggle Theme">
+              <i class='bx bx-sun'></i>
+            </button>
+            <button class="icon-btn" id="sound-toggle-btn" title="Toggle Sound">
+              <i class='bx bx-volume-full'></i>
+            </button>
+            <button class="icon-btn" id="btn-open-auth-modal" title="Customer Switcher">
+              <i class='bx bx-user-pin'></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Views Container -->
+      <main class="content-body">
+
+        <!-- ================= VIEW 1: DASHBOARD ================= -->
+        <section class="view-panel active" id="view-dashboard">
+          <div class="grid-cols-4">
+            <div class="card stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Liquid Net Worth</div>
+                <div class="stat-value" id="dash-total-networth">$853,471.15</div>
+                <div class="stat-meta"><i class='bx bx-trending-up'></i> +4.85% APY yield</div>
+              </div>
+              <div class="stat-icon icon-emerald">
+                <i class='bx bx-dollar-circle'></i>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Security Posture Score</div>
+                <div class="stat-value" id="dash-sec-score" style="color: var(--accent-cyan);">98 / 100</div>
+                <div class="stat-meta"><i class='bx bxs-shield'></i> Hardened Defense</div>
+              </div>
+              <div class="stat-icon icon-cyan">
+                <i class='bx bx-shield-quarter'></i>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Customer KYC Tier</div>
+                <div class="stat-value" id="dash-kyc-tier" style="font-size: 1.15rem; color: var(--accent-emerald);">Level 3 Enterprise</div>
+                <div class="stat-meta"><i class='bx bx-check-circle'></i> Verified Client</div>
+              </div>
+              <div class="stat-icon icon-purple">
+                <i class='bx bx-badge-check'></i>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Cryptographic Proofs</div>
+                <div class="stat-value" style="font-size: 1.15rem; color: var(--accent-cyan);">100% Valid</div>
+                <div class="stat-meta"><i class='bx bx-check-double'></i> SHA-256 Nonces</div>
+              </div>
+              <div class="stat-icon icon-rose">
+                <i class='bx bx-fingerprint'></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Split -->
+          <div class="grid-dashboard-main">
+            <div>
+              <div class="account-selector-grid" id="dash-accounts-list"></div>
+
+              <!-- Transactions Ledger -->
+              <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class='bx bx-receipt'></i>
+                    <span>Customer Transaction Ledger</span>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-secondary btn-sm" id="btn-export-csv">
+                      <i class='bx bx-download'></i> Export CSV
+                    </button>
+                    <button class="btn btn-primary btn-sm" id="btn-quick-transfer">
+                      <i class='bx bx-send'></i> Send Funds
+                    </button>
+                  </div>
+                </div>
+
+                <div class="tx-table-container">
+                  <table class="tx-table">
+                    <thead>
+                      <tr>
+                        <th>Transaction</th>
+                        <th>Category</th>
+                        <th>Date & Time</th>
+                        <th>Anti-Replay Nonce</th>
+                        <th>Amount (USD)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dash-tx-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Virtual 3D Card -->
+            <div>
+              <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class='bx bxs-credit-card'></i>
+                    <span>Primary Titanium Card</span>
+                  </div>
+                  <button class="btn btn-secondary btn-sm" id="btn-flip-card-dash">
+                    <i class='bx bx-sync'></i> Flip CVV
+                  </button>
+                </div>
+
+                <div class="card-container-3d">
+                  <div class="virtual-bank-card" id="dash-virtual-card">
+                    <div class="card-front gradient-emerald">
+                      <div class="card-brand-row">
+                        <div class="card-chip"></div>
+                        <i class='bx bx-wifi contactless-icon'></i>
+                      </div>
+                      <div class="card-number-display" id="dash-card-number">4532 •••• •••• 9921</div>
+                      <div class="card-bottom-row">
+                        <div>
+                          <div class="card-holder-label">Cardholder</div>
+                          <div class="card-holder-name" id="dash-card-holder">ALEX VANCE</div>
+                        </div>
+                        <div>
+                          <div class="card-holder-label">Expires</div>
+                          <div class="card-holder-name">09/29</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-back">
+                      <div class="magnetic-strip"></div>
+                      <div class="cvv-panel">
+                        <div class="signature-bar"></div>
+                        <div class="cvv-number" id="dash-card-cvv">842</div>
+                      </div>
+                      <p style="padding: 0 1.5rem; font-size: 0.65rem; color: #94a3b8; margin-top: 1rem;">
+                        Secured with dynamic 3D-Secure tokenization.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                  <button class="btn btn-secondary btn-sm" style="flex: 1;" id="btn-freeze-card-dash">
+                    <i class='bx bx-shield-x'></i> <span id="dash-freeze-text">Freeze Card</span>
+                  </button>
+                  <button class="btn btn-secondary btn-sm" style="flex: 1;" id="btn-regen-card-dash">
+                    <i class='bx bx-refresh'></i> New CVV
+                  </button>
+                </div>
+              </div>
+
+              <!-- Institutional Security Shield Banner -->
+              <div class="card" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(139, 92, 246, 0.1)); border-color: var(--border-glass-highlight);">
+                <div class="card-header">
+                  <div class="card-title" style="color: var(--text-accent);">
+                    <i class='bx bx-shield-quarter'></i>
+                    <span>Institutional Security Shield</span>
+                  </div>
+                  <span class="badge-status badge-completed">ENFORCED</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                  Real-time tamper-evident cryptographic event logging, PBKDF2 password derivation, and multi-factor authorization protect every financial asset.
+                </p>
+                <button class="btn btn-primary" style="width: 100%;" id="btn-nav-security">
+                  <i class='bx bx-slider-alt'></i> Manage Security Controls
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 2: ACCOUNTS & CARDS ================= -->
+        <section class="view-panel" id="view-accounts">
+          <div class="card-header" style="margin-bottom: 1.5rem;">
+            <div class="card-title">
+              <i class='bx bx-wallet'></i>
+              <span>Customer Asset Reserves</span>
+            </div>
+          </div>
+          <div class="grid-cols-3" id="accounts-cards-grid"></div>
+
+          <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <i class='bx bx-credit-card-alt'></i>
+                <span>Virtual Card Security Studio</span>
+              </div>
+            </div>
+            <div class="grid-cols-2" id="cards-studio-grid"></div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 3: TRANSFER & WIRE ================= -->
+        <section class="view-panel" id="view-transfers">
+          <div class="grid-cols-2">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-paper-plane'></i>
+                  <span>Zero-Trust Wire Transfer</span>
+                </div>
+                <span class="badge-status badge-completed">
+                  <i class='bx bx-lock'></i> AES-256 Channel
+                </span>
+              </div>
+
+              <div class="nonce-display-bar">
+                <span class="nonce-label">
+                  <i class='bx bx-key' style="color: var(--accent-cyan);"></i> Anti-Replay Nonce:
+                </span>
+                <span class="nonce-token" id="transfer-nonce-preview">Generating...</span>
+              </div>
+
+              <form id="wire-transfer-form">
+                <div class="form-group">
+                  <label class="form-label">Debiting Account</label>
+                  <select class="form-select" id="transfer-source-acc" required></select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Beneficiary Full Name</label>
+                  <div class="input-with-icon">
+                    <i class='bx bx-user'></i>
+                    <input type="text" class="form-input" id="transfer-recipient-name" placeholder="e.g. Nova Cybernetics LLC" required>
+                  </div>
+                </div>
+
+                <div class="grid-cols-2" style="margin-bottom: 0;">
+                  <div class="form-group">
+                    <label class="form-label">Account / IBAN Number</label>
+                    <div class="input-with-icon">
+                      <i class='bx bx-hash'></i>
+                      <input type="text" class="form-input" id="transfer-recipient-account" placeholder="9840-0012-3341" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Routing / SWIFT Code</label>
+                    <div class="input-with-icon">
+                      <i class='bx bx-buildings'></i>
+                      <input type="text" class="form-input" id="transfer-routing-num" placeholder="021000021" required>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Amount (USD)</label>
+                  <div class="input-with-icon">
+                    <i class='bx bx-dollar'></i>
+                    <input type="number" step="0.01" class="form-input" id="transfer-amount" placeholder="0.00" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Transfer Memo</label>
+                  <input type="text" class="form-input" id="transfer-memo" placeholder="Invoice #4928 - Strategic Infrastructure">
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                  <button type="submit" class="btn btn-primary" style="width: 100%;" id="btn-submit-transfer">
+                    <i class='bx bx-shield-check'></i> Verify Credentials & Transmit Wire
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div>
+              <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class='bx bx-bookmarks'></i>
+                    <span>Verified Payees Directory</span>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;" id="quick-payees-list"></div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class='bx bx-lock'></i>
+                    <span>Cryptographic Protection Standards</span>
+                  </div>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+                  All transactions enforce strict entity sanitization, anti-replay nonces (max age 60s), and multi-factor PBKDF2 transaction PIN authorization before ledger confirmation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 4: CREDIT & LENDING ================= -->
+        <section class="view-panel" id="view-loans">
+          <div class="grid-cols-2">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-calculator'></i>
+                  <span>Instant Credit Line Application</span>
+                </div>
+                <span class="badge-status badge-completed">Pre-Approved</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                Access immediate low-interest institutional capital disbursed directly into your checking account.
+              </p>
+
+              <form id="loan-application-form">
+                <div class="form-group">
+                  <label class="form-label">Requested Amount ($)</label>
+                  <div class="input-with-icon">
+                    <i class='bx bx-dollar'></i>
+                    <input type="number" min="5000" max="500000" step="1000" class="form-input" id="loan-amount-input" value="50000" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Facility Purpose</label>
+                  <select class="form-select" id="loan-purpose-select">
+                    <option value="Commercial Expansion">Commercial Expansion & Scaling</option>
+                    <option value="Working Capital">Working Capital & Operational Liquidity</option>
+                    <option value="Hardware Procurement">High-Security Key Infrastructure</option>
+                  </select>
+                </div>
+
+                <div style="background: var(--surface-glass); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.35rem;">
+                    <span style="color: var(--text-muted);">Fixed Prime APR:</span>
+                    <strong style="color: var(--accent-emerald);">5.20%</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.35rem;">
+                    <span style="color: var(--text-muted);">Term Length:</span>
+                    <strong>60 Months</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.88rem;">
+                    <span style="color: var(--text-muted);">Estimated Monthly Payment:</span>
+                    <strong style="font-family: var(--font-mono); color: var(--accent-cyan);" id="loan-monthly-preview">$947.83 / mo</strong>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="btn-apply-loan">
+                  <i class='bx bx-check-shield'></i> Authorize & Fund Immediately
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class='bx bx-credit-card'></i>
+                    <span>Active Lending Facilities</span>
+                  </div>
+                </div>
+                <div id="active-loans-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 5: SECURITY & COMPLIANCE ================= -->
+        <section class="view-panel" id="view-security">
+          <div class="grid-cols-3">
+            <!-- Enterprise Security Mode Switcher -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-slider-alt'></i>
+                  <span>Security Posture Mode</span>
+                </div>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Configure the core defense engine. In Pentest Assessment mode, legacy defenses are relaxed to verify penetration testing vectors:
+              </p>
+
+              <div class="form-group">
+                <select class="form-select" id="security-mode-select">
+                  <option value="HARDENED_ENTERPRISE">Hardened Production Defense (Default)</option>
+                  <option value="PENTEST_ASSESSMENT_MODE">Security Assessment Mode (Pentest Target)</option>
+                </select>
+              </div>
+
+              <div style="font-size: 0.75rem; color: var(--accent-cyan);" id="sec-mode-description">
+                OWASP Top 10 protection active: Parameterized queries, context encoding, anti-replay nonces.
+              </div>
+            </div>
+
+            <!-- SIEM & Syslog Telemetry Forwarding -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-broadcast'></i>
+                  <span>SIEM Telemetry Forwarder</span>
+                </div>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                Stream real-time audit logs in CEF/JSON format to an external SIEM or webhook listener:
+              </p>
+              <div class="form-group">
+                <input type="url" class="form-input" id="siem-webhook-input" placeholder="http://127.0.0.1:8088/api/siem">
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary btn-sm" id="btn-toggle-siem" style="flex: 1;">
+                  <span id="siem-toggle-label">Enable SIEM Stream</span>
+                </button>
+                <button class="btn btn-primary btn-sm" id="btn-test-siem-ping">
+                  <i class='bx bx-send'></i> Test Ping
+                </button>
+              </div>
+            </div>
+
+            <!-- Cryptographic Verification & Demo Data -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-check-shield'></i>
+                  <span>Cryptographic Proofs</span>
+                </div>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Every audit event links to the preceding SHA-256 hash. Re-calculate mathematical proof links:
+              </p>
+              <button class="btn btn-primary btn-sm" style="width: 100%; margin-bottom: 0.5rem;" id="btn-verify-audit-chain">
+                <i class='bx bx-badge-check'></i> Verify Chain Integrity (SHA-256)
+              </button>
+              <button class="btn btn-secondary btn-sm" style="width: 100%;" id="btn-reset-demo">
+                <i class='bx bx-reset'></i> Reset Demo Storage
+              </button>
+            </div>
+          </div>
+
+          <!-- Audit Log Table -->
+          <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <i class='bx bx-list-check'></i>
+                <span>Tamper-Evident Security & Audit Trail</span>
+              </div>
+              <span class="badge-status badge-completed" id="chain-status-badge">Chain Verified Intact</span>
+            </div>
+
+            <div class="tx-table-container">
+              <table class="tx-table">
+                <thead>
+                  <tr>
+                    <th>Log ID & Time</th>
+                    <th>Event Type</th>
+                    <th>Severity</th>
+                    <th>Description</th>
+                    <th>SHA-256 Proof Hash</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-log-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 6: CUSTOMER PROFILE ================= -->
+        <section class="view-panel" id="view-profile">
+          <div class="grid-cols-3">
+            <div class="card" style="text-align: center;">
+              <div class="user-avatar" id="profile-big-avatar" style="width: 72px; height: 72px; margin: 0 auto 1rem; font-size: 1.5rem;">AV</div>
+              <h3 id="profile-name" style="font-size: 1.25rem; font-weight: 700;">Alex Vance</h3>
+              <p id="profile-email" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">alex.vance@aegisvault.internal</p>
+              <span class="badge-status badge-completed" id="profile-tier-badge">Aegis Private Client Elite</span>
+
+              <div style="border-top: 1px solid var(--border-glass); margin-top: 1.25rem; padding-top: 1rem; text-align: left; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Customer Since:</span>
+                  <span id="profile-joined">March 2024</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">KYC Status:</span>
+                  <strong style="color: var(--accent-emerald);" id="profile-kyc">Level 3 Enterprise</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Credit Score:</span>
+                  <strong style="color: var(--accent-cyan);" id="profile-credit-score">815 (Exceptional)</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customer Switcher -->
+            <div class="card" style="grid-column: span 2;">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class='bx bx-user-pin'></i>
+                  <span>Registered Customer Accounts</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-add-customer-profile">
+                  <i class='bx bx-plus'></i> Open New Account
+                </button>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Switch between different customer profiles to test account isolation and personalized financial ledgers:
+              </p>
+              <div id="customers-profiles-list" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Transfer PIN & 2FA Modal -->
+  <div class="modal-overlay" id="modal-auth-transfer">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class='bx bx-shield-quarter' style="color: var(--accent-cyan);"></i>
+          <span>Confirm Wire Authorization</span>
+        </h3>
+        <button class="icon-btn" id="btn-close-auth-modal" style="width: 32px; height: 32px;">
+          <i class='bx bx-x'></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="background: var(--surface-glass); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem;">
+            <span style="color: var(--text-muted);">Transfer Amount:</span>
+            <strong id="modal-auth-amount" style="font-family: var(--font-mono); color: var(--accent-cyan);">$0.00</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.88rem;">
+            <span style="color: var(--text-muted);">Beneficiary:</span>
+            <strong id="modal-auth-recipient">-</strong>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Enter 4-Digit Transaction PIN</label>
+          <div class="input-with-icon">
+            <i class='bx bx-lock-alt'></i>
+            <input type="password" maxlength="4" class="form-input" id="auth-input-pin" placeholder="Default demo PIN: 1234" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Enter Rolling 6-Digit 2FA Code</label>
+          <div class="input-with-icon">
+            <i class='bx bx-key'></i>
+            <input type="text" maxlength="6" class="form-input" id="auth-input-totp" placeholder="Check header bar or enter 777888" autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="btn-cancel-transfer">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="btn-confirm-transfer-auth">
+          <i class='bx bx-check'></i> Authorize Wire
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2FA Modal -->
+  <div class="modal-overlay" id="modal-totp-generator">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class='bx bx-key' style="color: var(--accent-cyan);"></i>
+          <span>Virtual 2FA Authenticator Simulator</span>
+        </h3>
+        <button class="icon-btn" id="btn-close-totp-modal" style="width: 32px; height: 32px;">
+          <i class='bx bx-x'></i>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+          Simulates hardware or mobile TOTP token synchronized to 30-second epoch intervals.
+        </p>
+        <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--border-glass-highlight); border-radius: var(--radius-md); padding: 1.5rem; display: inline-block; min-width: 240px;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+            Current Rolling Token
+          </div>
+          <div id="modal-totp-code" style="font-family: var(--font-mono); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.15em; color: var(--accent-cyan);">
+            ------
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;" id="modal-totp-countdown">
+            Expires in 30s
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="btn-copy-totp">
+          <i class='bx bx-copy'></i> Copy Code
+        </button>
+        <button class="btn btn-primary btn-sm" id="btn-done-totp">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Controller -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
