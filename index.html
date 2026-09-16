@@ -849,6 +849,35 @@
 
         <!-- ================= VIEW 5: SECURITY & COMPLIANCE ================= -->
         <section class="view-panel" id="view-security">
+          <!-- Kali Linux Terminal Gateway Card -->
+          <div class="kali-header-banner" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+              <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <i class='bx bx-terminal' style="font-size: 1.75rem; color: var(--accent-cyan);"></i>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">Kali Linux Terminal Gateway & CLI Shell</h3>
+                <span class="kali-badge" id="kali-gateway-badge"><i class='bx bx-check-circle'></i> GATEWAY READY</span>
+              </div>
+              <p style="font-size: 0.84rem; color: var(--text-secondary); max-width: 850px;">
+                Connect your Kali Linux terminal to run authorized penetration-testing exercises using <strong style="color: var(--text-primary);">curl</strong>, <strong style="color: var(--text-primary);">Burp Suite</strong>, and <strong style="color: var(--text-primary);">Python</strong>. Attacks remain strictly isolated to the lab environment (<strong style="color: var(--accent-cyan); font-family: var(--font-mono);">127.0.0.1:8888</strong>).
+              </p>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.4rem;">
+                <div style="background: rgba(0,0,0,0.4); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); font-family: var(--font-mono); font-size: 0.8rem;">
+                  <span style="color: var(--text-muted);">Kali 1-Liner: </span>
+                  <strong style="color: var(--accent-cyan);" id="kali-oneliner-text">curl -sSL https://raw.githubusercontent.com/nadeemmhdm/aegis-vault-bank/main/connect-kali.sh | bash</strong>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-copy-kali-cmd">
+                  <i class='bx bx-copy'></i> Copy Command
+                </button>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 0.25rem; font-size: 0.78rem; color: var(--text-muted);">
+                <span>Lab Username: <strong style="color: var(--accent-emerald);">labuser</strong></span>
+                <span>Lab Password: <strong style="color: var(--accent-emerald);">aegislab2026</strong></span>
+                <span>Isolated Target: <strong style="color: var(--accent-cyan);">http://127.0.0.1:8888</strong></span>
+                <span><a href="./docs/KALI_TERMINAL_LAB_GUIDE.md" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;"><i class='bx bx-book-open'></i> Open Terminal Lab Guide</a></span>
+              </div>
+            </div>
+          </div>
+
           <div class="grid-cols-3">
             <!-- Enterprise Security Mode Switcher -->
             <div class="card">

@@ -682,6 +682,33 @@ class AppController {
 
   // Security & Compliance
   bindSecurityEvents() {
+    // Copy Kali 1-Liner
+    document.getElementById('btn-copy-kali-cmd')?.addEventListener('click', () => {
+      const cmdText = document.getElementById('kali-oneliner-text')?.textContent.trim();
+      if (cmdText) {
+        navigator.clipboard.writeText(cmdText);
+        this.showToast('Kali 1-liner command copied to clipboard!', 'success');
+      }
+    });
+
+    // Probe local Kali Gateway on 127.0.0.1:8888
+    const checkKaliGateway = async () => {
+      try {
+        const res = await fetch('http://127.0.0.1:8888/api/v1/lab/status', { method: 'GET', mode: 'cors' });
+        if (res.ok) {
+          const badge = document.getElementById('kali-gateway-badge');
+          if (badge) {
+            badge.innerHTML = "<i class='bx bx-radio-circle-marked bx-burst'></i> KALI CONNECTED (ONLINE)";
+            badge.style.background = 'var(--accent-emerald)';
+            badge.style.color = '#000';
+          }
+        }
+      } catch (e) {
+        // Gateway offline or not started yet
+      }
+    };
+    checkKaliGateway();
+
     const modeSelect = document.getElementById('security-mode-select');
     if (modeSelect) {
       modeSelect.value = this.store.securityEngine.getSecurityMode();

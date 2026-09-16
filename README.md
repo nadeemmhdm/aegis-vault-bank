@@ -44,22 +44,25 @@ You can connect your Kali Linux testing workstation to this live banking lab ins
 Open Firefox or Chromium inside Kali Linux and navigate to:  
 👉 **[https://nadeemmhdm.github.io/aegis-vault-bank/](https://nadeemmhdm.github.io/aegis-vault-bank/)**
 
-### Method 2: 1-Click Interactive Kali Terminal Launcher
+### Method 2: 1-Click Interactive Kali Terminal Launcher & Shell (`aegis-term>`)
 Open any terminal in Kali Linux and run:
 ```bash
 curl -sSL https://raw.githubusercontent.com/nadeemmhdm/aegis-vault-bank/main/connect-kali.sh | bash
 ```
-**Features of the launcher:**
-- Automatically detects your Kali IP address.
-- Starts a background SIEM webhook collector on port `9090`.
-- Launches the lab in Kali's browser configured for Burp Suite.
+**Features of the terminal connector:**
+- Authenticates with authorized lab credentials (`labuser` / `aegislab2026`).
+- Spawns the dedicated interactive shell `aegis-term>` with guided exercises (`sqli`, `xss`, `replay`, `tamper`).
+- Starts an isolated local REST API gateway on `http://127.0.0.1:8888` for direct testing via `curl`, `python`, and `Burp Suite`.
+- Captures and streams live Common Event Format (CEF) / JSON security audit telemetry.
 
-### Method 3: Burp Suite Proxying for Live GitHub Pages
+### Method 3: Burp Suite Proxying for Live Lab Endpoints
 1. Start Burp Suite: `burpsuite &`.
 2. Ensure Proxy listener is active on `127.0.0.1:8080`.
-3. In Firefox, set HTTP/HTTPS proxy to `127.0.0.1:8080`.
-4. Install Burp's CA certificate from `http://burp`.
-5. Browse to `https://nadeemmhdm.github.io/aegis-vault-bank/` to inspect all transaction packets, nonces, and API contracts.
+3. Route terminal curl commands directly through Burp:
+   ```bash
+   curl -x http://127.0.0.1:8080 -X POST http://127.0.0.1:8888/api/v1/auth/login ...
+   ```
+4. In Burp Repeater (`Ctrl+R`), craft custom payloads and inspect raw HTTP requests and responses.
 
 ---
 
@@ -69,6 +72,7 @@ Comprehensive technical manuals and lab notes are stored in the [`docs/`](./docs
 
 | Document | Description |
 | :--- | :--- |
+| 💻 [**docs/KALI_TERMINAL_LAB_GUIDE.md**](./docs/KALI_TERMINAL_LAB_GUIDE.md) | **Complete 9-Step Kali Terminal Pentest Guide**: Authentication, interactive shell (`aegis-term>`), curl commands, Burp Suite setup, and isolated exercises. |
 | 📖 [**docs/HOW_TO_ACCESS_LAB.md**](./docs/HOW_TO_ACCESS_LAB.md) | Step-by-step guide to zero-clone access, Kali connector setup, and Burp Suite SSL certificate installation. |
 | 🐉 [**docs/KALI_PENTEST_GUIDE.md**](./docs/KALI_PENTEST_GUIDE.md) | Deep-dive attack vector walkthroughs: SQLi bypass, Stored/Reflected XSS, Replay attacks, and parameter tampering. |
 | 📡 [**docs/SIEM_INTEGRATION.md**](./docs/SIEM_INTEGRATION.md) | Live Common Event Format (CEF) and JSON telemetry streaming to Kali listeners and SOC tools. |
